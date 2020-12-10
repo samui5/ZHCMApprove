@@ -1,0 +1,86 @@
+<mvc:View
+	controllerName="hcm.capr.ZHCMApprove.controller.Detail"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:semantic="sap.m.semantic"
+	xmlns:footerbar="sap.ushell.ui.footerbar">
+
+	<semantic:DetailPage
+		id="page"
+		navButtonPress="onNavBack"
+		showNavButton="{device>/system/phone}"
+		title="{i18n>detailTitle}"
+		busy="{detailView>/busy}"
+		busyIndicatorDelay="{detailView>/delay}">
+
+		<semantic:content>
+			<ObjectHeader
+				id="objectHeader"
+				title="{Claimno}"
+				number="{
+					path: 'Total',
+					formatter: '.formatter.currencyValue'
+				}"
+				numberUnit="{Cyear}">
+			</ObjectHeader>
+			<Table
+				id="lineItemsList"
+				width="auto"
+				items="{To_Items}"
+				updateFinished="onListUpdateFinished"
+				noDataText="{i18n>detailLineItemTableNoDataText}"
+				busyIndicatorDelay="{detailView>/lineItemTableDelay}"
+				class="sapUiResponsiveMargin">
+				<headerToolbar>
+					<Toolbar id="lineItemsToolbar">
+						<Title
+							id="lineItemsHeader"
+							text="{detailView>/lineItemListTitle}"/>
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column>
+						<Text text="{i18n>detailLineItemTableIDColumn}"/>
+					</Column>
+					<Column
+						minScreenWidth="Tablet"
+						demandPopin="true"
+						hAlign="End">
+						<Text text="{i18n>detailLineItemTableUnitNumberColumn}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>detailLineItemTableButtonColumn}"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<ObjectIdentifier
+								title="{path: 'Wagetype',formatter: '.formatter.getClaimType'}"
+								text="{path: 'Createdate', formatter: '.formatter.formatDate'} ({TimeStart} - {TimeEnd})"/>
+							<ObjectNumber
+								number="{
+									path: 'ClaimAmount',
+									formatter: '.formatter.currencyValue'
+								}"
+								unit="{Status}"/>
+							<Hbox>
+							<Button text="Approve" type="Accept" press="onApprove"
+									enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
+							<Button text="Reject" type="Reject" press="onReject"
+									enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
+							</Hbox>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</semantic:content>
+
+		<semantic:sendEmailAction>
+			<semantic:SendEmailAction
+				id="shareEmail"
+				press="onShareEmailPress"/>
+		</semantic:sendEmailAction>
+	</semantic:DetailPage>
+
+</mvc:View>
