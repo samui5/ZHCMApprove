@@ -30,6 +30,7 @@
 				updateFinished="onListUpdateFinished"
 				noDataText="{i18n>detailLineItemTableNoDataText}"
 				busyIndicatorDelay="{detailView>/lineItemTableDelay}"
+				mode = "MultiSelect"
 				class="sapUiResponsiveMargin">
 				<headerToolbar>
 					<Toolbar id="lineItemsToolbar">
@@ -75,12 +76,12 @@
 				</items>
 			</Table>
 		</semantic:content>
-
-		<semantic:sendEmailAction>
-			<semantic:SendEmailAction
-				id="shareEmail"
-				press="onShareEmailPress"/>
-		</semantic:sendEmailAction>
+		<!--<semantic:positiveAction>-->
+		<!--	<SemanticButton text = "Approve" press = "onApprove"/>-->
+		<!--</semantic:positiveAction>-->
+		<!--<semantic:negativeAction>-->
+		<!--	<SemanticButton text = "Reject" press = "onReject"/>-->
+		<!--</semantic:negativeAction>-->
 	</semantic:DetailPage>
 
 </mvc:View>
