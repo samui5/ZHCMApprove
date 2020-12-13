@@ -17,6 +17,26 @@ sap.ui.define([
 
 				return parseFloat(sValue).toFixed(2);
 			},
+			statusState: function(num) {
+				var state = {
+					"": sap.ui.core.ValueState.Information,
+					"0": sap.ui.core.ValueState.Success,
+					"1": sap.ui.core.ValueState.Success,
+					"2": sap.ui.core.ValueState.Success,
+					"3": sap.ui.core.ValueState.Error
+				};
+				return state[num];
+			},
+			statusIcon: function(num) {
+				var state = {
+					"": "sap-icon://edit",
+					"0": "sap-icon://edit",
+					"1": "sap-icon://message-success",
+					"2": "sap-icon://message-success",
+					"3": "sap-icon://message-error"
+				};
+				return state[num];
+			},
 			convertPDFToUrl: function(vContent){
 				var decodedPdfContent = atob(vContent.replace("data:application/pdf;base64,",""));
 				var byteArray = new Uint8Array(decodedPdfContent.length);

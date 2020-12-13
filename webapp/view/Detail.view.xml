@@ -40,7 +40,7 @@
 					</Toolbar>
 				</headerToolbar>
 				<columns>
-					<Column>
+					<Column width="15rem">
 						<Text text="{i18n>detailLineItemTableIDColumn}"/>
 					</Column>
 					<Column
@@ -50,8 +50,21 @@
 						<Text text="{i18n>detailLineItemTableUnitNumberColumn}"/>
 					</Column>
 					<Column>
+						<Text text="{i18n>detailLineItemTablePurpose}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>detailLineItemTableDestination}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>detailLineItemTableStatus}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>detailLineItemTableStatus}"/>
+					</Column>
+					<Column>
 						<Text text="{i18n>detailLineItemTableButtonColumn}"/>
 					</Column>
+					
 				</columns>
 				<items>
 					<ColumnListItem type="Navigation">
@@ -64,7 +77,11 @@
 									path: 'ClaimAmount',
 									formatter: '.formatter.currencyValue'
 								}"
-								unit="{Status}"/>
+								unit="REM"/>
+							<Text text="{Purpose}"></Text>
+							<Text text="{Destination}"></Text>
+							<ObjectStatus class="sapUiSmallMargin" icon="{path:'Status', formatter : '.formatter.statusIcon'}"
+										state="{path:'Status', formatter : '.formatter.statusState'}"/>
 							<HBox>
 							<Button text="Approve" type="Accept" press="onApprove"
 									enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
