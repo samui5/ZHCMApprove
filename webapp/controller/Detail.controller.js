@@ -29,6 +29,7 @@ sap.ui.define([
 				this.setModel(oViewModel, "detailView");
 
 				this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
+				this.oDataModel = this.getOwnerComponent().getModel();
 			},
 
 			/* =========================================================== */
@@ -39,6 +40,33 @@ sap.ui.define([
 			 * Event handler when the share by E-Mail button has been clicked
 			 * @public
 			 */
+			img: {},
+			photoPopup: {},
+			onShowAttach: function(oEvent){
+				var itemPath = oEvent.getParameter("listItem").getBindingContextPath();
+				var that = this;
+				this.oDataModel.read(itemPath + "/To_Attachments",{
+					success: function(data){
+						debugger;
+						var attachs = data.results;
+						// get the index of the row for which the attachment button has been clicked
+						if (attachs.length > 0) {
+							that.photoPopup = new sap.ui.xmlfragment("hcm.capr.ZHCMApprove.fragments.convertPDFToUrl", that);
+							that.getView().addDependent(that.photoPopup);
+							var oControl = that.photoPopup.getAggregation("content")[0];
+							oControl.setSource(that.formatter.convertPDFToUrl(atob(attachs[0].Content)));
+							that.photoPopup.open();
+						}else{
+							MessageToast.show("No Attachment Found");
+						}
+					}
+				});
+			},
+			handleClosePress: function(oEvent) {
+				this.img = {};
+				this.photoPopup.close();
+				this.photoPopup.destroy();
+			},
 			onShareEmailPress : function () {
 				var oViewModel = this.getModel("detailView");
 

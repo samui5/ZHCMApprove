@@ -5,7 +5,7 @@
 	xmlns:semantic="sap.m.semantic"
 	xmlns:footerbar="sap.ushell.ui.footerbar">
 
-	<semantic:DetailPage
+	<Page
 		id="page"
 		navButtonPress="onNavBack"
 		showNavButton="{device>/system/phone}"
@@ -13,7 +13,7 @@
 		busy="{detailView>/busy}"
 		busyIndicatorDelay="{detailView>/delay}">
 
-		<semantic:content>
+		<content>
 			<ObjectHeader
 				id="objectHeader"
 				title="{Claimno}"
@@ -30,7 +30,7 @@
 				updateFinished="onListUpdateFinished"
 				noDataText="{i18n>detailLineItemTableNoDataText}"
 				busyIndicatorDelay="{detailView>/lineItemTableDelay}"
-				mode = "MultiSelect"
+				mode = "MultiSelect" itemPress="onShowAttach"
 				class="sapUiResponsiveMargin">
 				<headerToolbar>
 					<Toolbar id="lineItemsToolbar">
@@ -54,7 +54,7 @@
 					</Column>
 				</columns>
 				<items>
-					<ColumnListItem>
+					<ColumnListItem type="Navigation">
 						<cells>
 							<ObjectIdentifier
 								title="{path: 'Wagetype',formatter: '.formatter.getClaimType'}"
@@ -65,23 +65,24 @@
 									formatter: '.formatter.currencyValue'
 								}"
 								unit="{Status}"/>
-							<Hbox>
+							<HBox>
 							<Button text="Approve" type="Accept" press="onApprove"
 									enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
-							<Button text="Reject" type="Reject" press="onReject"
+							<Button class="sapUiSmallMarginBegin" text="Reject" type="Reject" press="onReject"
 									enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
-							</Hbox>
+							</HBox>
 						</cells>
 					</ColumnListItem>
 				</items>
 			</Table>
-		</semantic:content>
-		<!--<semantic:positiveAction>-->
-		<!--	<SemanticButton text = "Approve" press = "onApprove"/>-->
-		<!--</semantic:positiveAction>-->
-		<!--<semantic:negativeAction>-->
-		<!--	<SemanticButton text = "Reject" press = "onReject"/>-->
-		<!--</semantic:negativeAction>-->
-	</semantic:DetailPage>
+		</content>
+		<footer>
+			<Toolbar>
+				<ToolbarSpacer />
+				<Button text = "Approve" type="Accept" press = "onApprove"/>
+		    	<Button text = "Reject" type="Reject" press = "onReject"/>
+			</Toolbar>
+		</footer>
+	</Page>
 
 </mvc:View>

@@ -17,6 +17,16 @@ sap.ui.define([
 
 				return parseFloat(sValue).toFixed(2);
 			},
+			convertPDFToUrl: function(vContent){
+				var decodedPdfContent = atob(vContent.replace("data:application/pdf;base64,",""));
+				var byteArray = new Uint8Array(decodedPdfContent.length);
+				for(var i=0; i<decodedPdfContent.length; i++){
+				    byteArray[i] = decodedPdfContent.charCodeAt(i);
+				}
+				var blob = new Blob([byteArray.buffer], { type: 'application/pdf' });
+				jQuery.sap.addUrlWhitelist("blob");
+				return URL.createObjectURL(blob);
+			},
 			getStatusEnable: function(claimType){
 				switch (claimType) {
 					case '0':
