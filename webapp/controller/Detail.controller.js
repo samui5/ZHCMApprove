@@ -86,7 +86,7 @@ sap.ui.define([
 				});
 			},
 			onReject: function(oEvent){
-				var itemPath = oEvent.getSource().getParent().getBindingContextPath();
+				var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
 				this.getView().getModel().update(itemPath,{"Status":"3"},
 					{
 					success: function(){
