@@ -1,52 +1,22 @@
-<mvc:View
-	controllerName="hcm.capr.ZHCMApprove.controller.Detail"
-	xmlns="sap.m"
-	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:semantic="sap.m.semantic"
+<mvc:View controllerName="hcm.capr.ZHCMApprove.controller.Detail" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic"
 	xmlns:footerbar="sap.ushell.ui.footerbar">
-
-	<Page
-		id="page"
-		navButtonPress="onNavBack"
-		showNavButton="{device>/system/phone}"
-		title="{i18n>detailTitle}"
-		busy="{detailView>/busy}"
+	<Page id="page" navButtonPress="onNavBack" showNavButton="{device>/system/phone}" title="{i18n>detailTitle}" busy="{detailView>/busy}"
 		busyIndicatorDelay="{detailView>/delay}">
-
 		<content>
-			<ObjectHeader
-				id="objectHeader"
-				title="{Claimno}"
-				number="{
-					path: 'Total',
-					formatter: '.formatter.currencyValue'
-				}"
-				numberUnit="{Cyear}">
-			</ObjectHeader>
-			<Table
-				id="lineItemsList"
-				width="auto"
-				items="{To_Items}"
-				updateFinished="onListUpdateFinished"
-				noDataText="{i18n>detailLineItemTableNoDataText}"
-				busyIndicatorDelay="{detailView>/lineItemTableDelay}"
-				mode = "MultiSelect" itemPress="onShowAttach"
-				class="sapUiResponsiveMargin">
+			<ObjectHeader id="objectHeader" title="CLAIM NO: {Claimno}" number="{ path: 'Total', formatter: '.formatter.currencyValue' }" numberUnit="{Cyear}"></ObjectHeader>
+			<Table id="lineItemsList" width="auto" items="{To_Items}" fixedLayout="false" updateFinished="onListUpdateFinished" itemPress="onShowAttach"
+				noDataText="{i18n>detailLineItemTableNoDataText}" busyIndicatorDelay="{detailView>/lineItemTableDelay}" mode="MultiSelect"
+				alternateRowColors="true" selectionChange="onSelectionChange" class="sapUiResponsiveMargin">
 				<headerToolbar>
 					<Toolbar id="lineItemsToolbar">
-						<Title
-							id="lineItemsHeader"
-							text="{detailView>/lineItemListTitle}"/>
+						<Title id="lineItemsHeader" text="{detailView>/lineItemListTitle}"/>
 					</Toolbar>
 				</headerToolbar>
 				<columns>
 					<Column width="15rem">
 						<Text text="{i18n>detailLineItemTableIDColumn}"/>
 					</Column>
-					<Column
-						minScreenWidth="Tablet"
-						demandPopin="true"
-						hAlign="End">
+					<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
 						<Text text="{i18n>detailLineItemTableUnitNumberColumn}"/>
 					</Column>
 					<Column>
@@ -59,35 +29,32 @@
 						<Text text="{i18n>detailLineItemTableStatus}"/>
 					</Column>
 					<Column>
-						<Text text="{i18n>detailLineItemTableStatus}"/>
+						<Text text="{i18n>detailLineItemTableButtonColumn}"/>
 					</Column>
 					<Column>
 						<Text text="{i18n>detailLineItemTableButtonColumn}"/>
 					</Column>
-					
+					<!--<Column>-->
+					<!--	<Text text="Attachment"/>-->
+					<!--</Column>-->
 				</columns>
 				<items>
 					<ColumnListItem type="Navigation">
 						<cells>
-							<ObjectIdentifier
-								title="{path: 'Wagetype',formatter: '.formatter.getClaimType'}"
+							<ObjectIdentifier title="{path: 'Wagetype',formatter: '.formatter.getClaimType'}"
 								text="{path: 'Createdate', formatter: '.formatter.formatDate'} ({TimeStart} - {TimeEnd})"/>
-							<ObjectNumber
-								number="{
-									path: 'ClaimAmount',
-									formatter: '.formatter.currencyValue'
-								}"
-								unit="REM"/>
+							<ObjectNumber number="{ path: 'ClaimAmount', formatter: '.formatter.currencyValue' }" unit="REM"/>
 							<Text text="{Purpose}"></Text>
 							<Text text="{Destination}"></Text>
 							<ObjectStatus class="sapUiSmallMargin" icon="{path:'Status', formatter : '.formatter.statusIcon'}"
-										state="{path:'Status', formatter : '.formatter.statusState'}"/>
-							<HBox>
-							<Button text="Approve" type="Accept" press="onApprove"
-									enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
+								state="{path:'Status', formatter : '.formatter.statusState'}"
+								tooltip="{parts : [{path:'Comments'},{path:'Status'}], formatter : '.formatter.comments'}"/>
+							<!--<HBox>-->
+							<Button text="Approve" type="Accept" press="onApprove" enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
 							<Button class="sapUiSmallMarginBegin" text="Reject" type="Reject" press="onReject"
-									enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
-							</HBox>
+								enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
+							<!--</HBox>-->
+							<!--<Button icon="sap-icon://attachment" press="onShowAttach"/>-->
 						</cells>
 					</ColumnListItem>
 				</items>
@@ -95,11 +62,10 @@
 		</content>
 		<footer>
 			<Toolbar>
-				<ToolbarSpacer />
-				<Button text = "Approve" type="Accept" press = "onApprove"/>
-		    	<Button text = "Reject" type="Reject" press = "onReject"/>
+				<ToolbarSpacer/>
+				<Button text="Approve" type="Accept" press="onSelectedApprove"/>
+				<Button text="Reject" type="Reject" press="onSelectedReject"/>
 			</Toolbar>
 		</footer>
 	</Page>
-
 </mvc:View>

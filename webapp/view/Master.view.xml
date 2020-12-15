@@ -65,11 +65,13 @@
 						press="onSelectionChange"
 						intro="{Pernr}"
 						title="{Claimno}"
+						icon="sap-icon://sap-box"
 						number="{
 							path: 'Total',
 							formatter: '.formatter.currencyValue'
 						}"
-						numberUnit="{Cmonth}-{Cyear}">
+						numberUnit="REM">
+						<ObjectAttribute text="Month: {Cmonth}-{Cyear}" />
 					</ObjectListItem>
 				</items>
 			</List>
