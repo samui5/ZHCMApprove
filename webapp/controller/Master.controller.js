@@ -101,7 +101,7 @@ sap.ui.define([
 				var sQuery = oEvent.getParameter("query");
 
 				if (sQuery) {
-					this._oListFilterState.aSearch = [new Filter("Claimno", FilterOperator.Contains, sQuery)];
+					this._oListFilterState.aSearch = [new Filter("Claimno", FilterOperator.EQ, sQuery)];
 				} else {
 					this._oListFilterState.aSearch = [];
 				}

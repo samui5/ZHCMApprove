@@ -3,7 +3,7 @@
 	<Page id="page" navButtonPress="onNavBack" showNavButton="{device>/system/phone}" title="{i18n>detailTitle}" busy="{detailView>/busy}"
 		busyIndicatorDelay="{detailView>/delay}">
 		<content>
-			<ObjectHeader id="objectHeader" title="CLAIM NO: {Claimno}" number="Total { path: 'Total', formatter: '.formatter.currencyValue' }" numberUnit="{Cyear}"></ObjectHeader>
+			<ObjectHeader id="objectHeader" title="CLAIM NO: {Claimno}" number="Total: { path: 'Total', formatter: '.formatter.currencyValue' } REM" numberUnit="Month: {Cmonth}-{Cyear}"></ObjectHeader>
 			<Table id="lineItemsList" width="auto" items="{To_Items}" fixedLayout="false" updateFinished="onListUpdateFinished" itemPress="onShowAttach"
 				noDataText="{i18n>detailLineItemTableNoDataText}" busyIndicatorDelay="{detailView>/lineItemTableDelay}" mode="MultiSelect"
 				alternateRowColors="true" selectionChange="onSelectionChange" class="sapUiResponsiveMargin">
