@@ -9,8 +9,9 @@ sap.ui.define([
 	"sap/m/ButtonType",
 	"sap/m/Label",
 	"sap/m/MessageToast",
+	"sap/m/MessageBox",
 	"sap/m/TextArea"
-], function(BaseController, JSONModel, formatter, Core, Dialog, DialogType, Button, ButtonType, Label, MessageToast, TextArea) {
+], function(BaseController, JSONModel, formatter, Core, Dialog, DialogType, Button, ButtonType, Label, MessageToast, MessageBox, TextArea) {
 	"use strict";
 
 	return BaseController.extend("hcm.capr.ZHCMApprove.controller.Detail", {
@@ -97,9 +98,12 @@ sap.ui.define([
 			var that = this;
 			var selectedPaths = this.getView().byId("lineItemsList").getSelectedContextPaths();
 			var selectedItems = this.getView().byId("lineItemsList").getSelectedItems();
+			if (selectedItems.length === 0) {
+				MessageBox.alert("Please select atleast one item");
+			}
 			for (var i = 0; i < selectedItems.length; i++) {
 				var icon = selectedItems[i].getCells()[4].getIcon();
-				if (icon.endsWith("error") || icon.endswith("complete")) {
+				if (icon.endsWith("error") || icon.endsWith("complete")) {
 					sap.m.MessageBox.alert("Please deselect already appoved/rejected");
 					return;
 				}
@@ -167,10 +171,13 @@ sap.ui.define([
 			var that = this;
 			var selectedPaths = this.getView().byId("lineItemsList").getSelectedContextPaths();
 			var selectedItems = this.getView().byId("lineItemsList").getSelectedItems();
+			if (selectedItems.length === 0) {
+				MessageBox.alert("Please select atleast one item");
+			}
 			for (var i = 0; i < selectedItems.length; i++) {
 				var icon = selectedItems[i].getCells()[4].getIcon();
-				if (icon.endsWith("error") || icon.endswith("complete")) {
-					sap.m.MessageBox.alert("Please deselect already appoved/rejected");
+				if (icon.endsWith("error") || icon.endsWith("complete")) {
+					MessageBox.alert("Please deselect already appoved/rejected");
 					return;
 				}
 			}
