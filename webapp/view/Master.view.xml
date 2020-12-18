@@ -63,14 +63,14 @@
 					<ObjectListItem
 						type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}"
 						press="onSelectionChange"
-						intro="{Pernr}"
+						intro="{Name} ({Pernr})"
 						title="{Claimno}"
 						icon="sap-icon://sap-box"
 						number="{
 							path: 'Total',
 							formatter: '.formatter.currencyValue'
 						}"
-						numberUnit="REM">
+						numberUnit="MYR">
 						<ObjectAttribute text="Month: {Cmonth}-{Cyear}" />
 					</ObjectListItem>
 				</items>

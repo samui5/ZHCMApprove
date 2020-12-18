@@ -1,11 +1,12 @@
 <mvc:View controllerName="hcm.capr.ZHCMApprove.controller.Detail" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic"
-	xmlns:footerbar="sap.ushell.ui.footerbar">
+	xmlns:footerbar="sap.ushell.ui.footerbar" xmlns:core="sap.ui.core">
 	<Page id="page" navButtonPress="onNavBack" showNavButton="{device>/system/phone}" title="{i18n>detailTitle}" busy="{detailView>/busy}"
 		busyIndicatorDelay="{detailView>/delay}">
 		<content>
-			<ObjectHeader id="objectHeader" title="CLAIM NO: {Claimno}" number="Total: { path: 'Total', formatter: '.formatter.currencyValue' } REM" numberUnit="Month: {Cmonth}-{Cyear}"></ObjectHeader>
+			<ObjectHeader id="objectHeader" title="CLAIM NO: {Claimno}" number="Total: { path: 'Total', formatter: '.formatter.currencyValue' } MYR"
+				numberUnit="Month: {Cmonth}-{Cyear}"></ObjectHeader>
 			<Table id="lineItemsList" width="auto" items="{To_Items}" fixedLayout="false" updateFinished="onListUpdateFinished" itemPress="onShowAttach"
-				noDataText="{i18n>detailLineItemTableNoDataText}" busyIndicatorDelay="{detailView>/lineItemTableDelay}" mode="MultiSelect"
+				noDataText="{i18n>detailLineItemTableNoDataText}" busyIndicatorDelay="{detailView>/lineItemTableDelay}" mode="None"
 				alternateRowColors="true" selectionChange="onSelectionChange" class="sapUiResponsiveMargin">
 				<headerToolbar>
 					<Toolbar id="lineItemsToolbar">
@@ -32,7 +33,7 @@
 						<Text text="{i18n>detailLineItemTableButtonColumn}"/>
 					</Column>
 					<Column>
-						<Text text="{i18n>detailLineItemTableButtonColumn}"/>
+						<Text text="{i18n>detailLineItemTableComments}"/>
 					</Column>
 					<!--<Column>-->
 					<!--	<Text text="Attachment"/>-->
@@ -43,18 +44,22 @@
 						<cells>
 							<ObjectIdentifier title="{path: 'Wagetype',formatter: '.formatter.getClaimType'}"
 								text="{path: 'Createdate', formatter: '.formatter.formatDate'} ({TimeStart} - {TimeEnd})"/>
-							<ObjectNumber number="{ path: 'ClaimAmount', formatter: '.formatter.currencyValue' }" unit="REM"/>
+							<ObjectNumber number="{ path: 'ClaimAmount', formatter: '.formatter.currencyValue' }" unit="MYR"/>
 							<Text text="{Purpose}"></Text>
 							<Text text="{Destination}"></Text>
 							<ObjectStatus class="sapUiSmallMargin" icon="{path:'Status', formatter : '.formatter.statusIcon'}"
 								state="{path:'Status', formatter : '.formatter.statusState'}"
 								tooltip="{parts : [{path:'Comments'},{path:'Status'}], formatter : '.formatter.comments'}"/>
-							<!--<HBox>-->
-							<Button text="Approve" type="Accept" press="onApprove" enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
-							<Button class="sapUiSmallMarginBegin" text="Reject" type="Reject" press="onReject"
-								enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>
-							<!--</HBox>-->
-							<!--<Button icon="sap-icon://attachment" press="onShowAttach"/>-->
+							<Select selectedKey="{Status}" change="onStatusChange" enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}">
+								<!--<core:Item key="0" text="Draft"/>-->
+								<core:Item key="1" text="Submited"/>
+								<core:Item key="2" text="Approved"/>
+								<core:Item key="3" text="Rejected"/>
+							</Select>
+							<Input value="{Comments}" enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"/>
+							<!--<Button text="Approve" type="Accept" press="onApprove" enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>-->
+							<!--<Button class="sapUiSmallMarginBegin" text="Reject" type="Reject" press="onReject"-->
+							<!--	enabled="{path: 'Status', formatter: '.formatter.getStatusEnable'}"></Button>-->
 						</cells>
 					</ColumnListItem>
 				</items>
@@ -63,8 +68,9 @@
 		<footer>
 			<Toolbar>
 				<ToolbarSpacer/>
-				<Button text="Approve" type="Accept" press="onSelectedApprove"/>
-				<Button text="Reject" type="Reject" press="onSelectedReject"/>
+				<!--<Button text="Approve" type="Accept" press="onSelectedApprove"/>-->
+				<!--<Button text="Reject" type="Reject" press="onSelectedReject"/>-->
+				<Button text="Submit" type="Attention" press="onSubmit"/>
 			</Toolbar>
 		</footer>
 	</Page>

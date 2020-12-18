@@ -38,6 +38,7 @@ sap.ui.define([
 
 			this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
 			this.oDataModel = this.getOwnerComponent().getModel();
+			this.changedStatusItems = [];
 		},
 
 		/* =========================================================== */
@@ -75,15 +76,35 @@ sap.ui.define([
 			this.photoPopup.close();
 			this.photoPopup.destroy();
 		},
-		// onShareEmailPress : function () {
-		// 	var oViewModel = this.getModel("detailView");
-
-		// 	sap.m.URLHelper.triggerEmail(
-		// 		null,
-		// 		oViewModel.getProperty("/shareSendEmailSubject"),
-		// 		oViewModel.getProperty("/shareSendEmailMessage")
-		// 	);
-		// },
+		onStatusChange: function(oEvent) {
+			var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
+			var status = oEvent.getParameter("selectedItem").getKey();
+			var comments = oEvent.getSource().getParent().getCells()[6].getValue();
+			this.changedStatusItems.push({
+				"sPath": itemPath,
+				"Status": status,
+				"Comments" : comments
+			});
+		},
+		onSubmit: function() {
+			var that = this;
+			var items = Array.from(this.changedStatusItems);
+			this.changedStatusItems = [];
+			items.forEach(function(item) {
+				that.getView().getModel().update(item.sPath, {
+					"Status": item.Status,
+					"Comments": item.Comments
+				}, {
+					success: function() {
+						MessageToast.show("Submited Successfully");
+					},
+					error: function() {
+						MessageToast.show("Submition Failed");
+						that.changedStatusItems = items;
+					}
+				});
+			});
+		},
 		onApprove: function(oEvent) {
 			var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
 			this.getView().getModel().update(itemPath, {
