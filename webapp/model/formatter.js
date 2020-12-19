@@ -100,9 +100,15 @@ sap.ui.define([], function() {
 					"3": "Rejected"
 				};
 				return status === "" ? text["0"] : text[status];
-			}else{
+			} else {
 				return comment;
 			}
+		},
+		enabledComments: function(action, status) {
+			if (action === "R" && status !== "3") {
+				return true;
+			}
+			return false;
 		},
 		attachBtnType: function(attachment) {
 			if (attachment) {

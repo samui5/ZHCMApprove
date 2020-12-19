@@ -54,11 +54,14 @@ sap.ui.define([
 		photoPopup: {},
 		onShowAttach: function(oEvent) {
 			var itemPath = oEvent.getParameter("listItem").getBindingContextPath();
+			itemPath = "/ClaimItemSet('" + oEvent.getSource().getModel("detailView").getProperty(itemPath).ItemId + "')";
 			// var itemPath = oEvent.getSource().getParent().getBindingContextPath();
 			var that = this;
+			this.getView().setBusy(true);
 			this.oDataModel.read(itemPath + "/To_Attachments", {
 				success: function(data) {
 					var attachs = data.results;
+					that.getView().setBusy(false);
 					// get the index of the row for which the attachment button has been clicked
 					if (attachs.length > 0) {
 						that.photoPopup = new sap.ui.xmlfragment("hcm.capr.ZHCMApprove.fragments.convertPDFToUrl", that);
@@ -78,180 +81,185 @@ sap.ui.define([
 			this.photoPopup.destroy();
 		},
 		onStatusChange: function(oEvent) {
-			var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
-			var status = oEvent.getParameter("selectedItem").getKey();
-			var comments = oEvent.getSource().getParent().getCells()[6].getValue();
-			this.changedStatusItems.push({
-				"sPath": itemPath,
-				"Status": status,
-				"Comments" : comments
-			});
+			this.getView().byId("idSubmit").setEnabled(true);
+			// var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
+			// var status = oEvent.getParameter("selectedItem").getKey();
+			// var comments = oEvent.getSource().getParent().getCells()[6].getValue();
+			// this.changedStatusItems.push({
+			// 	"sPath": itemPath,
+			// 	"Status": status,
+			// 	"Comments" : comments
+			// });
 		},
 		onSubmit: function() {
 			var that = this;
-			var items = Array.from(this.changedStatusItems);
-			this.changedStatusItems = [];
+			var items = this.getView().getModel('detailView').getData().To_Items;
+			// this.changedStatusItems = [];
+			this.getView().setBusy(true);
 			items.forEach(function(item) {
-				that.getView().getModel().update(item.sPath, {
-					"Status": item.Status,
+				that.getView().getModel().update("/ClaimItemSet('" + item.ItemId + "')", {
+					"Status": item.Action === "R" ? "3" : "2",
 					"Comments": item.Comments
 				}, {
 					success: function() {
+						that.getView().setBusy(false);
+						this.getView().byId("idSubmit").setEnabled(false);
 						MessageToast.show("Submited Successfully");
 					},
 					error: function() {
 						MessageToast.show("Submition Failed");
+						that.getView().setBusy(false);
 						that.changedStatusItems = items;
 					}
 				});
 			});
 		},
-		onApprove: function(oEvent) {
-			var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
-			this.getView().getModel().update(itemPath, {
-				"Status": "2"
-			}, {
-				success: function() {
-					MessageToast.show("Line Item Approved Successfully");
-				}
-			});
-		},
-		onSelectedApprove: function(oEvent) {
-			var that = this;
-			var selectedPaths = this.getView().byId("lineItemsList").getSelectedContextPaths();
-			var selectedItems = this.getView().byId("lineItemsList").getSelectedItems();
-			if (selectedItems.length === 0) {
-				MessageBox.alert("Please select atleast one item");
-			}
-			for (var i = 0; i < selectedItems.length; i++) {
-				var icon = selectedItems[i].getCells()[4].getIcon();
-				if (icon.endsWith("error") || icon.endsWith("complete")) {
-					sap.m.MessageBox.alert("Please deselect already appoved/rejected");
-					return;
-				}
-			}
-			selectedPaths.forEach(function(itemPath) {
-				that.getView().getModel().update(itemPath, {
-					"Status": "2"
-				}, {
-					success: function() {
-						that.getView().byId("lineItemsList").removeSelections();
-						MessageToast.show("Line Item Approved Successfully");
-					}
-				});
-			});
-		},
-		onReject: function(oEvent) {
-			var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
-			var that = this;
-			this.oSubmitDialog = new Dialog({
-				type: DialogType.Message,
-				title: "Confirm",
-				content: [
-					new Label({
-						text: "Do you want to reject?",
-						labelFor: "submissionNote"
-					}),
-					new TextArea("submissionNote", {
-						width: "100%",
-						placeholder: "Add note (required)",
-						liveChange: function(sEvent) {
-							var sText = sEvent.getParameter("value");
-							this.oSubmitDialog.getBeginButton().setEnabled(sText.length > 0);
-						}.bind(this)
-					})
-				],
-				beginButton: new Button({
-					type: ButtonType.Emphasized,
-					text: "Submit",
-					enabled: false,
-					press: function() {
-						var sText = Core.byId("submissionNote").getValue();
-						that.getView().getModel().update(itemPath, {
-							"Status": "3",
-							"Comments": sText
-						}, {
-							success: function() {
-								MessageToast.show("Line Item Rejected");
-								Core.byId("submissionNote").destroy();
-							}
-						});
-						this.oSubmitDialog.close();
-					}.bind(this)
-				}),
-				endButton: new Button({
-					text: "Cancel",
-					press: function() {
-						Core.byId("submissionNote").destroy();
-						this.oSubmitDialog.close();
-					}.bind(this)
-				})
-			});
-			this.oSubmitDialog.open();
-		},
-		onSelectedReject: function(oEvent) {
-			var that = this;
-			var selectedPaths = this.getView().byId("lineItemsList").getSelectedContextPaths();
-			var selectedItems = this.getView().byId("lineItemsList").getSelectedItems();
-			if (selectedItems.length === 0) {
-				MessageBox.alert("Please select atleast one item");
-			}
-			for (var i = 0; i < selectedItems.length; i++) {
-				var icon = selectedItems[i].getCells()[4].getIcon();
-				if (icon.endsWith("error") || icon.endsWith("complete")) {
-					MessageBox.alert("Please deselect already appoved/rejected");
-					return;
-				}
-			}
-			this.oSubmitDialog = new Dialog({
-				type: DialogType.Message,
-				title: "Confirm",
-				content: [
-					new Label({
-						text: "Do you want to reject?",
-						labelFor: "submissionNote"
-					}),
-					new TextArea("submissionNote", {
-						width: "100%",
-						placeholder: "Add note (required)",
-						liveChange: function(sEvent) {
-							var sText = sEvent.getParameter("value");
-							this.oSubmitDialog.getBeginButton().setEnabled(sText.length > 0);
-						}.bind(this)
-					})
-				],
-				beginButton: new Button({
-					type: ButtonType.Emphasized,
-					text: "Submit",
-					enabled: false,
-					press: function() {
-						var sText = Core.byId("submissionNote").getValue();
-						selectedPaths.forEach(function(itemPath) {
-							that.getView().getModel().update(itemPath, {
-								"Status": "3",
-								"Comments": sText
-							}, {
-								success: function() {
-									MessageToast.show("Line Item Rejected");
-									that.getView().byId("lineItemsList").removeSelections();
-									Core.byId("submissionNote").destroy();
-								}
-							});
-						});
+		// onApprove: function(oEvent) {
+		// 	var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
+		// 	this.getView().getModel().update(itemPath, {
+		// 		"Status": "2"
+		// 	}, {
+		// 		success: function() {
+		// 			MessageToast.show("Line Item Approved Successfully");
+		// 		}
+		// 	});
+		// },
+		// onSelectedApprove: function(oEvent) {
+		// 	var that = this;
+		// 	var selectedPaths = this.getView().byId("lineItemsList").getSelectedContextPaths();
+		// 	var selectedItems = this.getView().byId("lineItemsList").getSelectedItems();
+		// 	if (selectedItems.length === 0) {
+		// 		MessageBox.alert("Please select atleast one item");
+		// 	}
+		// 	for (var i = 0; i < selectedItems.length; i++) {
+		// 		var icon = selectedItems[i].getCells()[4].getIcon();
+		// 		if (icon.endsWith("error") || icon.endsWith("complete")) {
+		// 			sap.m.MessageBox.alert("Please deselect already appoved/rejected");
+		// 			return;
+		// 		}
+		// 	}
+		// 	selectedPaths.forEach(function(itemPath) {
+		// 		that.getView().getModel().update(itemPath, {
+		// 			"Status": "2"
+		// 		}, {
+		// 			success: function() {
+		// 				that.getView().byId("lineItemsList").removeSelections();
+		// 				MessageToast.show("Line Item Approved Successfully");
+		// 			}
+		// 		});
+		// 	});
+		// },
+		// onReject: function(oEvent) {
+		// 	var itemPath = oEvent.getSource().getParent().getBindingContext().getPath();
+		// 	var that = this;
+		// 	this.oSubmitDialog = new Dialog({
+		// 		type: DialogType.Message,
+		// 		title: "Confirm",
+		// 		content: [
+		// 			new Label({
+		// 				text: "Do you want to reject?",
+		// 				labelFor: "submissionNote"
+		// 			}),
+		// 			new TextArea("submissionNote", {
+		// 				width: "100%",
+		// 				placeholder: "Add note (required)",
+		// 				liveChange: function(sEvent) {
+		// 					var sText = sEvent.getParameter("value");
+		// 					this.oSubmitDialog.getBeginButton().setEnabled(sText.length > 0);
+		// 				}.bind(this)
+		// 			})
+		// 		],
+		// 		beginButton: new Button({
+		// 			type: ButtonType.Emphasized,
+		// 			text: "Submit",
+		// 			enabled: false,
+		// 			press: function() {
+		// 				var sText = Core.byId("submissionNote").getValue();
+		// 				that.getView().getModel().update(itemPath, {
+		// 					"Status": "3",
+		// 					"Comments": sText
+		// 				}, {
+		// 					success: function() {
+		// 						MessageToast.show("Line Item Rejected");
+		// 						Core.byId("submissionNote").destroy();
+		// 					}
+		// 				});
+		// 				this.oSubmitDialog.close();
+		// 			}.bind(this)
+		// 		}),
+		// 		endButton: new Button({
+		// 			text: "Cancel",
+		// 			press: function() {
+		// 				Core.byId("submissionNote").destroy();
+		// 				this.oSubmitDialog.close();
+		// 			}.bind(this)
+		// 		})
+		// 	});
+		// 	this.oSubmitDialog.open();
+		// },
+		// onSelectedReject: function(oEvent) {
+		// 	var that = this;
+		// 	var selectedPaths = this.getView().byId("lineItemsList").getSelectedContextPaths();
+		// 	var selectedItems = this.getView().byId("lineItemsList").getSelectedItems();
+		// 	if (selectedItems.length === 0) {
+		// 		MessageBox.alert("Please select atleast one item");
+		// 	}
+		// 	for (var i = 0; i < selectedItems.length; i++) {
+		// 		var icon = selectedItems[i].getCells()[4].getIcon();
+		// 		if (icon.endsWith("error") || icon.endsWith("complete")) {
+		// 			MessageBox.alert("Please deselect already appoved/rejected");
+		// 			return;
+		// 		}
+		// 	}
+		// 	this.oSubmitDialog = new Dialog({
+		// 		type: DialogType.Message,
+		// 		title: "Confirm",
+		// 		content: [
+		// 			new Label({
+		// 				text: "Do you want to reject?",
+		// 				labelFor: "submissionNote"
+		// 			}),
+		// 			new TextArea("submissionNote", {
+		// 				width: "100%",
+		// 				placeholder: "Add note (required)",
+		// 				liveChange: function(sEvent) {
+		// 					var sText = sEvent.getParameter("value");
+		// 					this.oSubmitDialog.getBeginButton().setEnabled(sText.length > 0);
+		// 				}.bind(this)
+		// 			})
+		// 		],
+		// 		beginButton: new Button({
+		// 			type: ButtonType.Emphasized,
+		// 			text: "Submit",
+		// 			enabled: false,
+		// 			press: function() {
+		// 				var sText = Core.byId("submissionNote").getValue();
+		// 				selectedPaths.forEach(function(itemPath) {
+		// 					that.getView().getModel().update(itemPath, {
+		// 						"Status": "3",
+		// 						"Comments": sText
+		// 					}, {
+		// 						success: function() {
+		// 							MessageToast.show("Line Item Rejected");
+		// 							that.getView().byId("lineItemsList").removeSelections();
+		// 							Core.byId("submissionNote").destroy();
+		// 						}
+		// 					});
+		// 				});
 
-						this.oSubmitDialog.close();
-					}.bind(this)
-				}),
-				endButton: new Button({
-					text: "Cancel",
-					press: function() {
-						Core.byId("submissionNote").destroy();
-						this.oSubmitDialog.close();
-					}.bind(this)
-				})
-			});
-			this.oSubmitDialog.open();
-		},
+		// 				this.oSubmitDialog.close();
+		// 			}.bind(this)
+		// 		}),
+		// 		endButton: new Button({
+		// 			text: "Cancel",
+		// 			press: function() {
+		// 				Core.byId("submissionNote").destroy();
+		// 				this.oSubmitDialog.close();
+		// 			}.bind(this)
+		// 		})
+		// 	});
+		// 	this.oSubmitDialog.open();
+		// },
 		/**
 		 * Event handler when the share in JAM button has been clicked
 		 * @public
@@ -340,8 +348,11 @@ sap.ui.define([
 				}
 			});
 			var that = this;
-			this.getView().getModel().read(sObjectPath + "/To_Items",{
-				success: function(data){
+			this.getView().getModel().read(sObjectPath + "/To_Items", {
+				success: function(data) {
+					for (var i = 0; i < data.results.length; i++) {
+						data.results[i].Action = data.results[i].Status === "3" ? "R" : "A";
+					}
 					that.oViewModel.setProperty("/To_Items", data.results);
 				}
 			});
