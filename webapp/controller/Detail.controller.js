@@ -29,13 +29,14 @@ sap.ui.define([
 			var oViewModel = new JSONModel({
 				busy: false,
 				delay: 0,
-				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
+				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading"),
+				To_Items: []
 			});
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
 
 			this.setModel(oViewModel, "detailView");
-
+			this.oViewModel = oViewModel;
 			this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
 			this.oDataModel = this.getOwnerComponent().getModel();
 			this.changedStatusItems = [];
@@ -336,6 +337,12 @@ sap.ui.define([
 					dataReceived: function() {
 						oViewModel.setProperty("/busy", false);
 					}
+				}
+			});
+			var that = this;
+			this.getView().getModel().read(sObjectPath + "/To_Items",{
+				success: function(data){
+					that.oViewModel.setProperty("/To_Items", data.results);
 				}
 			});
 		},
