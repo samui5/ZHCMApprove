@@ -72,7 +72,7 @@
 				<ToolbarSpacer/>
 				<!--<Button text="Approve" type="Accept" press="onSelectedApprove"/>-->
 				<!--<Button text="Reject" type="Reject" press="onSelectedReject"/>-->
-				<Button id="idSubmit" text="Submit" type="Attention" press="onSubmit" enabled="false"/>
+				<Button id="idSubmit" text="Submit" type="Attention" press="onSubmit" enabled="{=${Docstat}==='1'?true:false}"/>
 			</Toolbar>
 		</footer>
 	</Page>

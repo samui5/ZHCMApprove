@@ -96,14 +96,15 @@ sap.ui.define([
 			var items = this.getView().getModel('detailView').getData().To_Items;
 			// this.changedStatusItems = [];
 			this.getView().setBusy(true);
-			items.forEach(function(item) {
+			items.forEach(function(item, index) {
 				that.getView().getModel().update("/ClaimItemSet('" + item.ItemId + "')", {
 					"Status": item.Action === "R" ? "3" : "2",
 					"Comments": item.Comments
 				}, {
 					success: function() {
 						that.getView().setBusy(false);
-						this.getView().byId("idSubmit").setEnabled(false);
+						// that.getView().byId("idSubmit").setEnabled(false);
+						that.oViewModel.setProperty("/To_Items", items);
 						MessageToast.show("Submited Successfully");
 					},
 					error: function() {
@@ -112,6 +113,7 @@ sap.ui.define([
 						that.changedStatusItems = items;
 					}
 				});
+				items[index].Status = item.Action === "R" ? "3" : "2";
 			});
 		},
 		// onApprove: function(oEvent) {
